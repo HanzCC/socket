@@ -1,0 +1,10 @@
+Starting connection 1 to ('192.168.0.8', 5050)
+Starting connection 2 to ('192.168.0.8', 5050)
+Sending b'Message 1 from client.' to connection 2
+Sending b'Message 1 from client.' to connection 1
+Sending b'Message 2 from client.' to connection 2
+Sending b'Message 2 from client.' to connection 1
+Received b'Message 1 from client.Message 2 from client.' from connection 2
+Closing connection 2
+Received b'Message 1 from client.Message 2 from client.' from connection 1
+Closing connection 1
