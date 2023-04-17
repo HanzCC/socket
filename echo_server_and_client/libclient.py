@@ -103,7 +103,11 @@ class Message:
     def _process_response_binary_content(self):
         content = self.response
         print(f"Got reponse: {content!r}")
-    
+
+
+    # self.process_events - will be called many times over the life of the connection.
+    #    make sure any methods that should be called once are either checking a state variables themselves/
+    #       the state variable set by the method is checked by the caller
     def process_events(self, mask):
         if mask & selectors.EVENT_READ:
             self.read()
@@ -124,11 +128,17 @@ class Message:
             if self.request is None:
                 self.process_response()
 
+    # The client initiates a connection to the server and sends a request first,
+    #    the state variable - self._request_queued - is checked.
+    # If a request hasn't queued, it calls self.queue_request()
     def write(self):
         if not self._request_queued:
             self.queue_request()
         self.write()
 
+        # if the request has been queued,
+        #    and the send_buffer is empty,
+        #      done writing, only interested in read events.
         if self._request_queued:
             if not self._send_buffer:
                 self._set_selector_events_mask("r")
@@ -147,6 +157,8 @@ class Message:
         finally:
             self.sock = None
 
+    # Creates the request and writes it to the send buffer.
+    #    alse set the state variable self._request_queued so that it only called once.
     def queue_request(self):
         content = self.request["content"]
         content_type = self.request["type"]

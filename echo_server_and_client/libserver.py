@@ -43,6 +43,7 @@ class Message:
             else:
                 raise RuntimeError("Peer closed")
             
+    # Calls socket.send() if there's data in the send buffer.        
     def _write(self):
         if self._send_buffer:
             print(f"Sending {self._send_buffer!r} to {self.address}")
@@ -80,7 +81,7 @@ class Message:
         message = message_hdr + jsonheader_bytes + content_bytes
         return message
     
-    def _create_respone_json_content(self):
+    def _create_response_json_content(self):
         action = self.request.get('action')
         if action == 'search':
             query = self.request.get('value')
@@ -183,9 +184,10 @@ class Message:
                   f"request from {self.address}")
         self._set_selector_event_mask("w")
 
+    # Set the state variable 'response_created' and writes the response to the send buffer
     def create_response(self):
         if self.jsonheader["content-type"] == "text/json":
-            response = self._create_respone_json_content()
+            response = self._create_response_json_content()
         else:
             response = self._create_response_binary_content()
         message = self._create_message(**response)
